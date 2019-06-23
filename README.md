@@ -8,10 +8,10 @@ I work on this alone and have no time to implement a GUI, so all the interactive
 
 ![logo](https://github.com/adamz799/Paints/demo/splice_51419210.png)
 These pictures are from Danbooru dataset.
-![logo](https://github.com/adamz799/Paints/demo/d2.png)
-![logo](https://github.com/adamz799/Paints/demo/d3.png)
-![logo](https://github.com/adamz799/Paints/demo/d4.png)
-![logo](https://github.com/adamz799/Paints/demo/d5.png)
+![logo](https://github.com/adamz799/Paints/demo/d2.PNG)
+![logo](https://github.com/adamz799/Paints/demo/d3.PNG)
+![logo](https://github.com/adamz799/Paints/demo/d4.PNG)
+![logo](https://github.com/adamz799/Paints/demo/d5.PNG)
 This lineart is searched from the Internet by search engine, if this violate you right please contact me or report an issue. 
 
 
