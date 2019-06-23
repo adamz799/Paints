@@ -6,6 +6,8 @@ This work utilizes about a million pairs of illustration and lineart, while the 
 How to use:
 I work on this alone and have no time to implement a GUI, so all the interactive function is achieved by OpenCV, which might be a little weird. In painting, you need to pick a color from a reference image and draw it to the lineart, then press 'r' in your keyboard to launch the network. It is fine to draw only part of the lineart to see the result and then draw other parts to correct network's fault.
 
+The network can be downloaded [here](https://drive.google.com/file/d/1pNlnZnQQf-LxdmBZlwMVmzhAFxJFvbt-/view?usp=sharing)
+
 ![logo](https://github.com/adamz799/Paints/blob/master/demo/splice_51419210.png)
 <br>These pictures are from Danbooru dataset.
 <br>
