@@ -8,6 +8,7 @@ I work on this alone and have no time to implement a GUI, so all the interactive
 
 The network can be downloaded [here](https://drive.google.com/file/d/1pNlnZnQQf-LxdmBZlwMVmzhAFxJFvbt-/view?usp=sharing)
 
+
 ![logo](https://github.com/adamz799/Paints/blob/master/demo/splice_51419210.png)
 <br>These pictures are from Danbooru dataset.
 <br>

@@ -1,4 +1,5 @@
 from config10 import *
+import argparse
 from utils_app import  get_image, device, get_paint
 
 BATCH_SIZE = 1
@@ -6,11 +7,31 @@ epoch = 120000
 
 torch.backends.cudnn.benchmark=True
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--lineart',
+    type=str,
+    required=True,
+    help='lineart_dir'
+)
+
+parser.add_argument(
+    '--ref_img',
+    type=str,
+    required=True,
+    help='ref_img_dir'
+)
+
+FLAGS = parser.parse_args()
+
+lineart_dir = FLAGS.lineart
+ref_dir = FLAGS.ref_img
+
 net = torch.load('p.net').to(device).eval()
 
 for i in range(1, epoch+1):
     filenames = random.sample(file_list, BATCH_SIZE)
-    inputs_batch, hint_batch = get_paint(filenames)
+    inputs_batch, hint_batch = get_paint(lineart_dir, ref_dir)
     outputs = net(inputs_batch, hint_batch, ITERATION)
    
     hint_pos = hint_batch[0,0:1]

@@ -193,61 +193,60 @@ cv2.namedWindow('Result')
 cv2.setMouseCallback('Result', pick_color_e)
 i=0
 
-def get_paint(names):
-    inputs_batch = [None]*len(names)
-    hint_batch = [None]*len(names)
+def get_paint(lineart_dir, ref_dir):
+    inputs_batch = [None]*1
+    hint_batch = [None]*1
     
-    for idx in range(0,len(names)):
-        f = names[idx]
-        global refer_img, line, refer_lab, hint
-        # Read file
-        line = cv2.imread('D:/Paints/pics/256_data/test/289002.jpg')
-        m = max(line.shape[:2])
-        size = 400
-        ratio = (size+0.0)/m
-        line = cv2.resize(line,(0,0),fx=ratio,fy = ratio, interpolation= cv2.INTER_AREA)
+   
+    global refer_img, line, refer_lab, hint
+    # Read file
+    line = cv2.imread(lineart_dir)
+    m = max(line.shape[:2])
+    size = 400
+    ratio = (size+0.0)/m
+    line = cv2.resize(line,(0,0),fx=ratio,fy = ratio, interpolation= cv2.INTER_AREA)
 
-        if line.shape[1]<size:
-            d = int((size - line.shape[1])/2)+1
-            line = cv2.copyMakeBorder(line,0,0,d,d,cv2.BORDER_CONSTANT,value=[255,255,255])
+    if line.shape[1]<size:
+        d = int((size - line.shape[1])/2)+1
+        line = cv2.copyMakeBorder(line,0,0,d,d,cv2.BORDER_CONSTANT,value=[255,255,255])
 
-        if line.shape[0]<size:
-            d = int((size - line.shape[0])/2)+1
-            line = cv2.copyMakeBorder(line,d,d,0,0,cv2.BORDER_CONSTANT,value=[255,255,255])
+    if line.shape[0]<size:
+        d = int((size - line.shape[0])/2)+1
+        line = cv2.copyMakeBorder(line,d,d,0,0,cv2.BORDER_CONSTANT,value=[255,255,255])
+    
+
+    line = line[:size,:size]
+    line = np.where(line>245,255,line-50)
+    line = np.clip(line,0,255)
+    lineart = cv2.cvtColor(line, cv2.COLOR_BGR2GRAY).astype(np.float32)
+    
+    refer_img = cv2.imread(ref_dir)
+    cv2.imshow('Color_ref', refer_img)
+    refer_lab = BGR2Lab(refer_img.astype(np.float32))
+    global i
+    if i==0:
+        hint = np.zeros(line.shape).astype(np.float32)
+        hint[:,:,0]-=256
+        i+=1
+
+    global mode
+    while(1):
+        cv2.imshow('Lineart', line)
         
+        k = cv2.waitKey(1) & 0xFF
+        if k == ord('m'):
+            mode = not mode
+        elif k == 27:
+            break
+        elif k == ord('r'):
+            break
+    
+    # Send to pytorch
+    lineart = lineart[None]
+    hint_t =  np.transpose(hint, (2,0,1))
 
-        line = line[:size,:size]
-        line = np.where(line>245,255,line-50)
-        line = np.clip(line,0,255)
-        lineart = cv2.cvtColor(line, cv2.COLOR_BGR2GRAY).astype(np.float32)
-        
-        refer_img = cv2.imread(label_dir+f)
-        cv2.imshow('Color_ref', refer_img)
-        refer_lab = BGR2Lab(refer_img.astype(np.float32))
-        global i
-        if i==0:
-            hint = np.zeros(line.shape).astype(np.float32)
-            hint[:,:,0]-=256
-            i+=1
-
-        global mode
-        while(1):
-            cv2.imshow('Lineart', line)
-            
-            k = cv2.waitKey(1) & 0xFF
-            if k == ord('m'):
-                mode = not mode
-            elif k == 27:
-                break
-            elif k == ord('r'):
-                break
-       
-        # Send to pytorch
-        lineart = lineart[None]
-        hint_t =  np.transpose(hint, (2,0,1))
-
-        inputs_batch[idx] = torch.from_numpy(lineart.copy())
-        hint_batch[idx] = torch.from_numpy(hint_t.copy())
+    inputs_batch[idx] = torch.from_numpy(lineart.copy())
+    hint_batch[idx] = torch.from_numpy(hint_t.copy())
 
 
     # Send to GPU
