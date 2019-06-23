@@ -98,25 +98,6 @@ def tensor_Lab2BGR(Lab_tensor):
         print('Unknown tensor type')
     return 
 
-def tensor_Lab2RGB(Lab_tensor):
-    L = Lab_tensor[:,0:1]
-    a = Lab_tensor[:,1:2]
-    b = Lab_tensor[:,2:3]
-    L_ = (L+16)/116
-    X = Xn*f_reverse(L_+a/500)
-    Y = Yn*f_reverse(L_)
-    Z = Zn*f_reverse(L_-b/200)
-    R =  3.240479*X - 1.537150*Y - 0.498535*Z
-    G = -0.969256*X + 1.875992*Y + 0.041556*Z
-    B =  0.055648*X - 0.204043*Y + 1.057311*Z
-    if isinstance(Lab_tensor,torch.Tensor):
-        return torch.cat([R,G,B],1)*255.0
-    elif isinstance(Lab_tensor,np.ndarray):
-        return np.concatenate([R,G,B],axis= 1)*255.0
-    else:
-        print('Unknown tensor type')
-    return 
-
 def tensor_Lab2torch_rgb(Lab_tensor):
     L = Lab_tensor[:,0:1]
     a = Lab_tensor[:,1:2]
@@ -131,46 +112,45 @@ def tensor_Lab2torch_rgb(Lab_tensor):
 
     return torch.cat([R,G,B],1)
     
-    return 
 
 def get_image(name, tensor):
     if tensor.shape[1]==1:
         img = tensor[0,0].cpu().detach().numpy()[:,:,None].astype(np.uint8)
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-        #cv2.imshow(name, img)
         return img
         
-
-                #img = np.rint(img)
-                # tensor = torch.clamp(tensor, -127,127)
-                # tensor[:,0] = torch.clamp(tensor[:,0], 0, 100)
-
-                #     >>> lab_max
-                # array([[[100.     ,  98.23516,  94.47579]]], dtype=float32)
-                # >>> lab_min
-                # array([[[   0.      ,  -86.18125 , -107.861755]]], dtype=float32)
+    # lab_max
+    # array([[[100.     ,  98.23516,  94.47579]]], dtype=float32)
+    #  lab_min
+    # array([[[   0.      ,  -86.18125 , -107.861755]]], dtype=float32)
     tensor[:,0] = torch.clamp(tensor[:,0],0,100)
     tensor[:,1] = torch.clamp(tensor[:,1],-86.18125,98.23516)
     tensor[:,2] = torch.clamp(tensor[:,2],-107.861755,94.47579)
     tensor = tensor_Lab2BGR(tensor)[0]
     img = tensor.cpu().detach().numpy()
     img = np.clip(img,0,255).astype(np.uint8)
-
-    # max_v, min_v = img.max(),img.min()
-    # img = (img -min_v)/(max_v-min_v)*255
     img = np.transpose(img,(1,2,0))
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    
-    
     cv2.imshow(name,img)
-    #cv2.waitKey(0)
     return img
+
+
+drawing = False 
+mode = True 
+ix, iy = -1, -1 
+refer_img = np.zeros([300,300],dtype = np.uint8)
+refer_lab = np.zeros([300,300],dtype = np.float32)
+color = (0,0,0)
+color_lab = (0,0,0)
+img1 = np.zeros((128,128,3), np.uint8)
+line = np.zeros([300,300],dtype = np.uint8)
+hint = np.zeros([300,300],dtype = np.float32)
+result = np.zeros([300,300],dtype = np.uint8)
+
 
 def pick_color(event, x, y, flags, param):
     global color,color_lab, refer_img, img1,refer_lab
 
     if event == cv2.EVENT_LBUTTONDOWN:
-        # 鼠标左键按下事件
         color = refer_img[y,x]
         color_lab = refer_lab[y,x]
         img1[:,:]=color
@@ -180,7 +160,6 @@ def pick_color_e(event, x, y, flags, param):
     global color,color_lab, refer_img, img1,refer_lab,result
 
     if event == cv2.EVENT_LBUTTONDOWN:
-        # 鼠标左键按下事件
         color = result[y,x]
         color_lab = hint[y,x]
         img1[:,:]=color
@@ -207,7 +186,6 @@ def draw(event, x, y, flags, param):
 
 cv2.namedWindow('Lineart')
 cv2.setMouseCallback('Lineart', draw) 
-
 cv2.namedWindow('Color_ref')
 cv2.setMouseCallback('Color_ref', pick_color) 
 cv2.namedWindow('Color')
