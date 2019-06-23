@@ -8,11 +8,12 @@ I work on this alone and have no time to implement a GUI, so all the interactive
 
 ![logo](https://github.com/adamz799/Paints/blob/master/demo/splice_51419210.png)
 <br>These pictures are from Danbooru dataset.
+<br>
 <br>![logo](https://github.com/adamz799/Paints/blob/master/demo/d2.PNG)
 <br>![logo](https://github.com/adamz799/Paints/blob/master/demo/d3.PNG)
 <br>![logo](https://github.com/adamz799/Paints/blob/master/demo/d4.PNG)
 <br>![logo](https://github.com/adamz799/Paints/blob/master/demo/d5.PNG)
-<br>This lineart is searched from the Internet by search engine, if this violate you right please contact me or report an issue. 
+###This lineart is searched from the Internet by search engine, if this violate you right please contact me or report an issue. 
 
 
 ## Installation Dependencies:
