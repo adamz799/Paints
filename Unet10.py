@@ -3,7 +3,6 @@ from config10 import device
 import torch
 from torch import nn
 import torch.nn.functional as F
-from torchvision import models
 
 
 def weight_init(m):
@@ -18,17 +17,7 @@ def weight_init(m):
 inplace = True
 bias = True
 
-# torch.set_default_tensor_type(torch.Float())
 base_channel = 32
-
-# model = models.resnet50(pretrained=True)
-# class FeatureNet(nn.Module):
-#     def __init__(self):
-#         super(FeatureNet, self).__init__()
-#         self.net = nn.Sequential(*list(model.children())[:-2])
-#     def forward(self, inputs):
-#         return self.net(inputs)
-
 
 def squeeze_block(base_channel):
     return nn.Sequential(
@@ -292,75 +281,3 @@ class InputNet(nn.Module):
         #     output_img.append(self.d1)
 
         # return output_img
-
-
-class UnetD(nn.Module):
-    def __init__(self):
-        super(UnetD, self).__init__()
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(3, base_channel, 3, padding=1)
-        )
-        self.conv2 = squeeze_block(base_channel)  # 32-64; 256-128
-        self.conv3 = squeeze_block(2*base_channel)  # 64-128; 128-64
-        self.conv4 = squeeze_block(4*base_channel)  # 128-256; 64-32
-        self.conv5 = squeeze_block(8*base_channel)  # 256-512; 32-16
-        self.conv6 = nn.Sequential(
-            nn.Conv2d(512, 1, 3, padding=1)
-        )
-        # init
-        self.apply(weight_init)
-
-    def forward(self, image):
-        t = self.conv1(image)  # 3-32
-        t = self.conv2(t)  # 32-64
-        t = self.conv3(t)  # 64-128
-        t = self.conv4(t)  # 128-256
-        t = self.conv5(t)  # 256-512
-        t = self.conv6(t)
-        return t
-
-
-class UnetDL(nn.Module):
-    def __init__(self):
-        super(UnetDL, self).__init__()
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(1, base_channel, 3, padding=1)
-        )
-        self.conv2 = squeeze_block(base_channel)  # 32-64; 256-128
-        self.conv3 = squeeze_block(2*base_channel)  # 64-128; 128-64
-        self.conv4 = squeeze_block(4*base_channel)  # 128-256; 64-32
-        self.conv5 = squeeze_block(8*base_channel)  # 256-512; 32-16
-        self.conv6 = nn.Sequential(
-            nn.Conv2d(512, 1, 3, padding=1)
-        )
-        # init
-        self.apply(weight_init)
-        base_net_dict = torch.load('v10_3_2_D.net').state_dict()
-        self_dict = self.state_dict()
-        base_net_dict = {name:weight for name,weight in base_net_dict.items() if name in self_dict and '1' not in name}
-        self_dict.update(base_net_dict)
-        self.load_state_dict(self_dict)
-
-
-    def forward(self, image):
-        t = self.conv1(image)  # 3-32
-        t = self.conv2(t)  # 32-64
-        t = self.conv3(t)  # 64-128
-        t = self.conv4(t)  # 128-256
-        t = self.conv5(t)  # 256-512
-        t = self.conv6(t)
-        return t
-
-
-class GaussianBlur(nn.Module):
-    def __init__(self, kernel):
-        super(GaussianBlur, self).__init__()
-        self.kernel = torch.from_numpy(kernel[None, None]).to(device)
-        self.kernel = torch.cat([self.kernel,self.kernel,self.kernel],0)
-        self.weight = nn.Parameter(data=self.kernel, requires_grad=False)
- 
-    def forward(self, x):
-        padding = int(self.kernel.shape[2]/2)
-        x = F.pad(x,(padding, padding, padding, padding), mode='reflect')        
-        x = F.conv2d(x, self.weight, padding=0, groups = 3 )       
-        return x

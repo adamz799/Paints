@@ -1,5 +1,5 @@
 from config10 import *
-from utils_app import  get_image, get_tensors, device, delta_E1994,get_paint
+from utils_app import  get_image, device, get_paint
 
 BATCH_SIZE = 1
 epoch = 120000
@@ -12,8 +12,7 @@ for i in range(1, epoch+1):
     filenames = random.sample(file_list, BATCH_SIZE)
     inputs_batch, hint_batch = get_paint(filenames)
     outputs = net(inputs_batch, hint_batch, ITERATION)
-    torch.save(net,'111.net')
-    
+   
     hint_pos = hint_batch[0,0:1]
     hint_pos = torch.cat((hint_pos, hint_pos, hint_pos),0).cpu().detach().numpy()
     hint_pos = np.transpose(hint_pos,(1,2,0))
