@@ -32,6 +32,8 @@ Then you need to download [network](https://drive.google.com/file/d/1pNlnZnQQf-L
 
 
 ## Installation Dependencies:
+* CUDA
+* CuDNN
 * Python 3.5
 * Numpy
 * [Pytorch 1.0.1](https://pytorch.org/)
